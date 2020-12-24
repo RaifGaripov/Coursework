@@ -55,13 +55,13 @@ public class Game {
                 switch (bomb.get(coordinate)) {
                     case ZERO:
                         openBoxesAround(coordinate);
-                        return;
+                        break;
                     case BOMB:
                         openBombs(coordinate);
-                        return;
+                        break;
                     default:
                         flag.setOpenedToBox(coordinate);
-                        return;
+                        break;
                 }
         }
     }
