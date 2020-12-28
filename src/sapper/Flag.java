@@ -19,22 +19,26 @@ class Flag {
         countOfClosedBoxes--;
     }
 
+    public void setPointToBox(Coordinate coordinate) {
+        flagMap.set(coordinate, Box.INFORM);
+    }
+
     public void toggleFlagedToBox(Coordinate coordinate) {
         switch (flagMap.get(coordinate)) {
             case FLAGED:
                 setClosedToBox(coordinate);
                 break;
-            case CLOSED:
+            case CLOSED, INFORM:
                 setFlagedToBox(coordinate);
                 break;
         }
     }
 
-    private void setClosedToBox(Coordinate coordinate) {
+    public void setClosedToBox(Coordinate coordinate) {
         flagMap.set(coordinate, Box.CLOSED);
     }
 
-    private void setFlagedToBox(Coordinate coordinate) {
+    public void setFlagedToBox(Coordinate coordinate) {
         flagMap.set(coordinate, Box.FLAGED);
     }
 

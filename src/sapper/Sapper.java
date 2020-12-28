@@ -2,9 +2,13 @@ package sapper;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.lang.String;
+
+import static java.awt.event.KeyEvent.*;
 
 public class Sapper extends JFrame {
     private final Game game;
@@ -39,9 +43,8 @@ public class Sapper extends JFrame {
             ROWS = Integer.parseInt(input);
             input = JOptionPane.showInputDialog("Enter the number of bombs:");
             BOMBS = Integer.parseInt(input);
-        }
-        catch (NumberFormatException e) {
-            JOptionPane.showMessageDialog(null,"Incorrect parameters entered");
+        } catch (NumberFormatException e) {
+            JOptionPane.showMessageDialog(null, "Incorrect parameters entered");
             System.exit(0);
         }
     }
@@ -77,6 +80,84 @@ public class Sapper extends JFrame {
                     game.start();
                 label.setText(getMessage());
                 panel.repaint();
+            }
+        });
+
+        Coordinate point = new Coordinate(0, 0);
+        panel.setFocusable(true);
+        panel.requestFocusInWindow();
+        game.pointerOpen(point);
+        panel.addKeyListener(new KeyListener() {
+            @Override
+            public void keyTyped(KeyEvent e) {
+
+
+            }
+
+            @Override
+            public void keyPressed(KeyEvent e) {
+                int key = e.getKeyCode();
+                switch (key) {
+                    case VK_UP:
+                        if (point.getY() <= 0) break;
+                        game.pointerClose(point);
+                        point.decY();
+                        game.pointerOpen(point);
+                        break;
+                    case VK_DOWN:
+                        if (point.getY() >= COLS - 1) break;
+                        game.pointerClose(point);
+                        point.incY();
+                        game.pointerOpen(point);
+                        break;
+                    case VK_RIGHT:
+                        if (point.getX() >= ROWS - 1) break;
+                        game.pointerClose(point);
+                        point.incX();
+                        game.pointerOpen(point);
+                        break;
+                    case VK_LEFT:
+                        if (point.getX() <= 0) break;
+                        game.pointerClose(point);
+                        point.decX();
+                        game.pointerOpen(point);
+                        break;
+                    case VK_Z:
+                        if (game.getGameState() == GameState.BOMBED || game.getGameState() == GameState.WINNER) {
+                            point.setX(0);
+                            point.setY(0);
+                            game.pointerOpen(point);
+                        }
+                        game.pressLeftButton(point);
+                        if (game.getGameState() == GameState.BOMBED || game.getGameState() == GameState.WINNER) {
+                            point.setX(0);
+                            point.setY(0);
+                            game.pointerOpen(point);
+                        }
+                        break;
+                    case VK_X:
+                        if (game.getGameState() == GameState.BOMBED || game.getGameState() == GameState.WINNER) {
+                            point.setX(0);
+                            point.setY(0);
+                            game.pointerOpen(point);
+                        }
+                        game.pressRightButton(point);
+                        break;
+                    case VK_R:
+                        game.start();
+                        point.setX(0);
+                        point.setY(0);
+                        game.pointerOpen(point);
+                        break;
+                    default:
+                        break;
+                }
+                panel.repaint();
+            }
+
+            @Override
+            public void keyReleased(KeyEvent e) {
+
             }
         });
         panel.setPreferredSize(new Dimension(

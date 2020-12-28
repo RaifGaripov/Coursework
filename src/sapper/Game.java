@@ -4,6 +4,7 @@ public class Game {
 
     private final Bomb bomb;
     private final Flag flag;
+    private Box state;
 
     private GameState gameState;
 
@@ -51,7 +52,7 @@ public class Game {
                 return;
             case FLAGED:
                 return;
-            case CLOSED:
+            case CLOSED, INFORM:
                 switch (bomb.get(coordinate)) {
                     case ZERO:
                         openBoxesAround(coordinate);
@@ -97,6 +98,27 @@ public class Game {
     public void pressRightButton(Coordinate coordinate) {
         if (gameOver()) return;
         flag.toggleFlagedToBox(coordinate);
+    }
+
+    public void pointerOpen(Coordinate coordinate) {
+        state = flag.get(coordinate);
+        flag.setPointToBox(coordinate);
+    }
+
+    public void pointerClose(Coordinate coordinate) {
+        if (flag.get(coordinate) == Box.INFORM) {
+            switch (state) {
+                case OPENED:
+                    flag.setOpenedToBox(coordinate);
+                    return;
+                case FLAGED:
+                    flag.setFlagedToBox(coordinate);
+                    return;
+                case CLOSED:
+                    flag.setClosedToBox(coordinate);
+                    return;
+            }
+        }
     }
 
     private boolean gameOver() {
