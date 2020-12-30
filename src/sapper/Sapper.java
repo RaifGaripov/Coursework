@@ -2,19 +2,19 @@ package sapper;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
+import java.awt.event.*;
+import java.io.*;
 import java.lang.String;
 
 import static java.awt.event.KeyEvent.*;
 
 public class Sapper extends JFrame {
-    private final Game game;
+    private Game game;
 
     private JPanel panel;
     private JLabel label;
+    private JButton saveGameButton;
+    private JFileChooser fileChooser;
 
     private int COLS;
     private int ROWS;
@@ -26,9 +26,7 @@ public class Sapper extends JFrame {
     }
 
     private Sapper() {
-        initParameters();
-        game = new Game(COLS, ROWS, BOMBS);
-        game.start();
+        initFileChooser();
         setImage();
         initLabel();
         initPanel();
@@ -51,7 +49,92 @@ public class Sapper extends JFrame {
 
     private void initLabel() {
         label = new JLabel("Click any cell to start");
-        add(label, BorderLayout.NORTH);
+        add(label, BorderLayout.SOUTH);
+    }
+
+    private void initFileChooser()
+    {
+        fileChooser = new JFileChooser();
+        int ret = fileChooser.showDialog(null, "Открыть сохранение");
+        if (ret == JFileChooser.APPROVE_OPTION) {
+            File file = fileChooser.getSelectedFile();
+            FileReader load = null;
+            try {
+                load = new FileReader(file);
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            }
+            BufferedReader reader = new BufferedReader(load);
+
+            String currentLine;
+            String[] line = new String[10];
+            int i = 0;
+
+            while(line != null && i < 1) {
+                try {
+                    line = reader.readLine().split(" ");
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                ROWS = Integer.parseInt(line[0]);
+                COLS = Integer.parseInt(line[1]);
+                BOMBS = Integer.parseInt(line[2]);
+                i++;
+            }
+
+            game = new Game(COLS, ROWS, BOMBS);
+            game.start();
+            Coordinate coordinate = new Coordinate(0,0);
+
+
+            while(true) {
+                try {
+                    line = reader.readLine().split(" ");
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                currentLine = line[0];
+                if(currentLine.equals("@")) break;
+
+                for(int j = 0; j < COLS; j++) {
+                    game.getFlagMap().set(coordinate, Box.valueOf(line[j]));
+                    coordinate.incX();
+                }
+
+                coordinate.setX(0);
+                coordinate.incY();
+
+                i++;
+            }
+
+            coordinate.setX(0);
+            coordinate.setY(0);
+
+            line = new String[COLS];
+            while(line != null) {
+                try {
+                    line = reader.readLine().split(" ");
+                } catch (IOException e) {
+                    e.printStackTrace();
+                } catch (NullPointerException n){
+                     break;
+                }
+
+                for(int j = 0; j < COLS; j++) {
+                    game.getBombMap().set(coordinate, Box.valueOf(line[j]));
+                    coordinate.incX();
+                }
+
+                coordinate.setX(0);
+                coordinate.incY();
+                i++;
+            }
+        }
+        else {
+            initParameters();
+            game = new Game(COLS, ROWS, BOMBS);
+            game.start();
+        }
     }
 
     private void initPanel() {
@@ -65,6 +148,17 @@ public class Sapper extends JFrame {
                 }
             }
         };
+
+        saveGameButton = new JButton("Save game");
+        add(saveGameButton, BorderLayout.BEFORE_FIRST_LINE);
+
+        saveGameButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                Coordinate coordinate = new Coordinate(0, 0);
+                game.saveGame(coordinate,COLS,ROWS);
+            }
+        });
 
         panel.addMouseListener(new MouseAdapter() {
             @Override
@@ -88,9 +182,9 @@ public class Sapper extends JFrame {
         panel.requestFocusInWindow();
         game.pointerOpen(point);
         panel.addKeyListener(new KeyListener() {
+
             @Override
             public void keyTyped(KeyEvent e) {
-
 
             }
 

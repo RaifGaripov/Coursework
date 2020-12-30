@@ -1,13 +1,16 @@
 package sapper;
 
 class Flag {
+    public Matrix getFlagMap() {
+        return flagMap;
+    }
+
     private Matrix flagMap;
     private int countOfClosedBoxes;
 
     void start() {
         flagMap = new Matrix(Box.CLOSED);
         countOfClosedBoxes = Ranges.getSize().x * Ranges.getSize().y;
-
     }
 
     Box get(Coordinate coordinate) {
@@ -69,4 +72,5 @@ class Flag {
         }
         return count;
     }
+
 }

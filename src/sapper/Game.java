@@ -1,5 +1,7 @@
 package sapper;
 
+import java.io.*;
+
 public class Game {
 
     private final Bomb bomb;
@@ -29,6 +31,14 @@ public class Game {
             return bomb.get(coordinate);
         else
             return flag.get(coordinate);
+    }
+
+    public Matrix getFlagMap() {
+        return flag.getFlagMap();
+    }
+
+    public Matrix getBombMap(){
+        return bomb.getBombMap();
     }
 
     public void pressLeftButton(Coordinate coordinate) {
@@ -110,13 +120,52 @@ public class Game {
             switch (state) {
                 case OPENED:
                     flag.setOpenedToBox(coordinate);
-                    return;
+                    break;
                 case FLAGED:
                     flag.setFlagedToBox(coordinate);
-                    return;
+                    break;
                 case CLOSED:
                     flag.setClosedToBox(coordinate);
-                    return;
+                    break;
+            }
+        }
+    }
+
+    public void saveGame(Coordinate coordinate, int rows, int cols) {
+        FileWriter file = null;
+        try {
+            file = new FileWriter("saveGame", false);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        PrintWriter save = new PrintWriter(file);
+
+        save.print(rows + " " + cols + " " + bomb.getTotalBombs() + "\n");
+        save.flush();
+
+        for(coordinate.y = 0; coordinate.y <= cols - 1; coordinate.y++) {
+            for (coordinate.x = 0; coordinate.x <= rows - 1; coordinate.x++) {
+                save.print(flag.getFlagMap().get(coordinate));
+                save.print(" ");
+                save.flush();
+            }
+            save.print("\n");
+            save.flush();
+        }
+
+        save.print("@\n");
+        save.flush();
+
+        for(coordinate.y = 0; coordinate.y <= cols - 1; coordinate.y++) {
+            for (coordinate.x = 0; coordinate.x <= rows - 1; coordinate.x++) {
+                save.print(bomb.getBombMap().get(coordinate));
+                save.print(" ");
+                save.flush();
+            }
+
+            if(coordinate.y < cols - 1) {
+                save.print("\n");
+                save.flush();
             }
         }
     }

@@ -21,6 +21,5 @@ class Matrix {
         if (Ranges.inRange(coordinate)) {
             matrix[coordinate.x][coordinate.y] = box;
         }
-
     }
 }

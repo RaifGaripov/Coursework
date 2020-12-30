@@ -1,6 +1,10 @@
 package sapper;
 
 class Bomb {
+    public Matrix getBombMap() {
+        return bombMap;
+    }
+
     private Matrix bombMap;
     private int totalBombs;
 
