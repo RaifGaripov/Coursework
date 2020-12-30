@@ -68,24 +68,20 @@ public class Sapper extends JFrame {
 
             String currentLine;
             String[] line = new String[10];
-            int i = 0;
 
-            while(line != null && i < 1) {
-                try {
-                    line = reader.readLine().split(" ");
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-                ROWS = Integer.parseInt(line[0]);
-                COLS = Integer.parseInt(line[1]);
-                BOMBS = Integer.parseInt(line[2]);
-                i++;
+            try {
+                line = reader.readLine().split(" ");
+            } catch (IOException e) {
+                e.printStackTrace();
             }
+            ROWS = Integer.parseInt(line[0]);
+            COLS = Integer.parseInt(line[1]);
+            BOMBS = Integer.parseInt(line[2]);
+
 
             game = new Game(COLS, ROWS, BOMBS);
             game.start();
             Coordinate coordinate = new Coordinate(0,0);
-
 
             while(true) {
                 try {
@@ -96,15 +92,13 @@ public class Sapper extends JFrame {
                 currentLine = line[0];
                 if(currentLine.equals("@")) break;
 
-                for(int j = 0; j < COLS; j++) {
-                    game.getFlagMap().set(coordinate, Box.valueOf(line[j]));
+                for(int i = 0; i < COLS; i++) {
+                    game.getFlagMap().set(coordinate, Box.valueOf(line[i]));
                     coordinate.incX();
                 }
 
                 coordinate.setX(0);
                 coordinate.incY();
-
-                i++;
             }
 
             coordinate.setX(0);
@@ -120,14 +114,12 @@ public class Sapper extends JFrame {
                      break;
                 }
 
-                for(int j = 0; j < COLS; j++) {
-                    game.getBombMap().set(coordinate, Box.valueOf(line[j]));
+                for(int i = 0; i < COLS; i++) {
+                    game.getBombMap().set(coordinate, Box.valueOf(line[i]));
                     coordinate.incX();
                 }
 
                 coordinate.setX(0);
-                coordinate.incY();
-                i++;
             }
         }
         else {
@@ -148,17 +140,6 @@ public class Sapper extends JFrame {
                 }
             }
         };
-
-        saveGameButton = new JButton("Save game");
-        add(saveGameButton, BorderLayout.BEFORE_FIRST_LINE);
-
-        saveGameButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                Coordinate coordinate = new Coordinate(0, 0);
-                game.saveGame(coordinate,COLS,ROWS);
-            }
-        });
 
         panel.addMouseListener(new MouseAdapter() {
             @Override
@@ -254,10 +235,22 @@ public class Sapper extends JFrame {
 
             }
         });
+
         panel.setPreferredSize(new Dimension(
                 Ranges.getSize().x * IMAGE_SIZE,
                 Ranges.getSize().y * IMAGE_SIZE));
         add(panel);
+
+        saveGameButton = new JButton("Save game");
+        add(saveGameButton, BorderLayout.BEFORE_FIRST_LINE);
+
+        saveGameButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                Coordinate coordinate = new Coordinate(0, 0);
+                game.saveGame(coordinate,COLS,ROWS);
+            }
+        });
 
     }
 

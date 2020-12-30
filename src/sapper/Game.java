@@ -59,9 +59,9 @@ public class Game {
         switch (flag.get(coordinate)) {
             case OPENED:
                 setOpenedToClosedBoxesAroundNumber(coordinate);
-                return;
+                break;
             case FLAGED:
-                return;
+                break;
             case CLOSED, INFORM:
                 switch (bomb.get(coordinate)) {
                     case ZERO:
